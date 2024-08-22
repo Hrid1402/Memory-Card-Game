@@ -1,0 +1,21 @@
+.endScrean{
+    position: fixed;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(32, 32, 32, 0.685);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.endScrean .content{
+    background-color: white;
+    padding: 2rem;
+    width: 50vw;
+    height: auto;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

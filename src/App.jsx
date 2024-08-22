@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import './styles/App.css'
 import './styles/cards.css'
+import './styles/gameOver.css'
 import {getPokemons} from './apiCall.js'
 import loadingICON from './assets/loadingICON.png'
 import { DifficultyButton } from './components/buttons.jsx'
@@ -12,6 +13,7 @@ let allPokemons = [];
 let pokemonTotal = 12;
 let clickedPokemons = [];
 function App() {
+  const [pokemonsLeft, setpokemonsLeft] = useState(pokemonTotal);
   const [curPokemons, setCurPokemons] = useState([]);
   const [difficulty, setDifficulty] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,16 +58,26 @@ function App() {
 
   function MainMenu({curDifficulty, curPokemons}){
 
+    function DialogBox(){
+      return(
+        <div className='endScrean'>
+          <div className='content'>
+            <h1>YOU LOSE</h1>
+          </div>
+        </div>
+      )
+    }
 
     function handleCardClick(name){
       if(clickedPokemons.includes(name)){
         console.log("You already clicked this card!!!!!");
       }else{
         console.log(`${name} clicked`);
+        
         clickedPokemons.push(name);
+        setpokemonsLeft(pokemonsLeft - 1);
         setRandomPokemons(pokemonTotal, allPokemons);
       }
-      
     }
     function PokemonCard({name, sprite}){
       return( 
@@ -100,7 +112,8 @@ function App() {
     }else{
       return(
         <div className='gameBlock'>
-          <h1>Pokemons left: {pokemonTotal}</h1>
+          <DialogBox/>
+          <h1>Pokemons left: {pokemonsLeft}</h1>
           <div className='cards'>
             {curPokemons.map((pokemon) => {
               return(
@@ -115,6 +128,7 @@ function App() {
 
   return (
     <>
+      
       <MainMenu curDifficulty={difficulty} curPokemons={curPokemons}></MainMenu>
     </>
     
