@@ -1,34 +1,91 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react'
+import './styles/App.css'
+import './styles/cards.css'
+import {getPokemons} from './apiCall.js'
+import loadingICON from './assets/loadingICON.png'
+import { DifficultyButton } from './components/buttons.jsx'
+
+
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [allPokemons, setAllPokemons] = useState([]);
+  const [difficulty, setDifficulty] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  async function createPokemonCards(n) {
+    let newPokemons = allPokemons;
+    for(let i = 1; i <= n; i++) {
+      let pokemon = await getPokemons(i);
+      newPokemons.push(pokemon.sprites.other["official-artwork"].front_default);
+      setAllPokemons(newPokemons);
+      
+    }
+  }
+  
+  
+
+
+  function changeDifficulty(newDifficulty) {
+    setDifficulty(newDifficulty);
+    console.log(`You selected ${newDifficulty} difficulty`);
+  }
+  useEffect(() => {
+    if (difficulty !== null) {
+        const fetchPokemons = async () => {
+        await createPokemonCards(12);
+        setIsLoading(false);
+      };
+      fetchPokemons();
+    }
+  }, [difficulty]);
+
+  function MainMenu({curDifficulty, allPokemons}){
+    if(curDifficulty == null){
+      return(
+        <section>
+          <h1>Pokémon Memory Cards Game</h1>
+          <p className="read-the-docs">
+            In each round, spot and click the different Pokémon card without repeating your previous choices. 
+          </p>
+          <p>Choose your difficulty:</p>
+          <div className='buttons'>
+            <DifficultyButton txt="Easy" difficulty={"easy"} callback={changeDifficulty}/>
+            <DifficultyButton txt="Medium" difficulty={"medium"} callback={changeDifficulty}/>
+            <DifficultyButton txt="Hard" difficulty={"hard"} callback={changeDifficulty}/>
+          </div>
+        </section>
+      )
+    }else if(isLoading){
+      return(
+        <div className='loading'>
+          <img src={loadingICON} alt=""/>
+          <h1>Loading...</h1>
+        </div>
+      )
+    }else{
+      return(
+        <div className='gameBlock'>
+          <h1>Pokemons left: 20</h1>
+          <div className='cards'>
+            {allPokemons.map((pokemon, index) => {
+              return(
+                <div className='card' key={index}>
+                  <img src={pokemon} alt={`Pokemon ${index}`}/>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      );
+    }
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <MainMenu curDifficulty={difficulty} allPokemons={allPokemons}></MainMenu>
     </>
+    
+    
   )
 }
 
