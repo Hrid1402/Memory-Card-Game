@@ -8,6 +8,12 @@
     padding: 1rem;
     margin: 0.2rem;
     width: 250px;
+    transition: transform 0.3s;
+    cursor: pointer;
+}
+.card:hover{
+    transition: transform 0.5s;
+    transform: scale(1.1);
 }
 .cards{
     display: flex;
