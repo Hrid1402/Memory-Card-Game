@@ -11,9 +11,14 @@ import { v4 as uuidv4 } from 'uuid';
 
 let allPokemons = [];
 let pokemonTotal = 12;
+const amountOfPokemons = {
+  easy: 12,
+  medium: 18,
+  hard: 24
+}
 let clickedPokemons = [];
 function App() {
-  const [pokemonsLeft, setpokemonsLeft] = useState(pokemonTotal);
+  const [pokemonsLeft, setPokemonsLeft] = useState(pokemonTotal);
   const [curPokemons, setCurPokemons] = useState([]);
   const [difficulty, setDifficulty] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,19 +35,41 @@ function App() {
   function setRandomPokemons(pokemonTotal, allPokemons){
     let randomPokemons = [];
     let copy = [...allPokemons];
+    const freePokemons = allPokemons.filter(pokemon => !clickedPokemons.includes(pokemon.name));
+    const amountNewPokemons = (freePokemons.length <= 12) ? Math.floor(Math.random() * freePokemons.length) + 1 : Math.floor(Math.random() * 12) + 1;
+    const extraPokemons = 12 - amountNewPokemons;
 
-    for(let i = 0; i < pokemonTotal; i++){
-      let randomIndex = Math.floor(Math.random() * copy.length);
+
+    
+    for (let i = 0; i < amountNewPokemons; i++) {
+      let randomIndex = Math.floor(Math.random() * freePokemons.length);
+      randomPokemons.push(freePokemons[randomIndex]);
+      console.log("randomIndex", randomIndex);
+      console.log(freePokemons);
+      console.log("FREE", freePokemons[randomIndex]);
+      freePokemons.splice(randomIndex, 1);
+    }
+    for (let i = 0; i < extraPokemons; i++) {
+      let randomIndex;
+      do{
+        randomIndex = Math.floor(Math.random() * copy.length);
+      }while(randomPokemons.includes(copy[randomIndex]));
       randomPokemons.push(copy[randomIndex]);
+      console.log("extra", copy[randomIndex]);
       copy.splice(randomIndex, 1);
+      
     }
     setCurPokemons(randomPokemons);
+
+
   }
   
 
 
   function changeDifficulty(newDifficulty) {
     setDifficulty(newDifficulty);
+    pokemonTotal = amountOfPokemons[newDifficulty];
+    setPokemonsLeft(pokemonTotal);
     console.log(`You selected ${newDifficulty} difficulty`);
   }
   useEffect(() => {
@@ -57,26 +84,39 @@ function App() {
   }, [difficulty]);
 
   function MainMenu({curDifficulty, curPokemons}){
-
+    const [isGameOver, setIsGameOver] = useState(false);
     function DialogBox(){
       return(
-        <div className='endScrean'>
+        <div className='endScreen'>
           <div className='content'>
             <h1>YOU LOSE</h1>
           </div>
         </div>
       )
     }
+    useEffect(() => {
+      if (pokemonsLeft === 0) {
+          setIsGameOver(true);
+      }
+    }, [pokemonsLeft]);
 
     function handleCardClick(name){
       if(clickedPokemons.includes(name)){
-        console.log("You already clicked this card!!!!!");
+        console.log(`You already clicked ${name}!!!!!`);
+        const freePokemons = allPokemons.filter(pokemon => !clickedPokemons.includes(pokemon.name));
+        console.log(freePokemons);
+        setIsGameOver(true);
       }else{
-        console.log(`${name} clicked`);
-        
+        console.log(`----------------${name} clicked`);
         clickedPokemons.push(name);
-        setpokemonsLeft(pokemonsLeft - 1);
-        setRandomPokemons(pokemonTotal, allPokemons);
+
+        const newPokemonsLeft = pokemonsLeft - 1;
+        setPokemonsLeft(newPokemonsLeft);
+        if(newPokemonsLeft == 0){
+          console.log("GAME OVER, YOU WON!");
+        }else{
+          setRandomPokemons(pokemonTotal, allPokemons);
+        }
       }
     }
     function PokemonCard({name, sprite}){
@@ -112,7 +152,7 @@ function App() {
     }else{
       return(
         <div className='gameBlock'>
-          <DialogBox/>
+          {isGameOver ? <DialogBox/>: null}
           <h1>Pokemons left: {pokemonsLeft}</h1>
           <div className='cards'>
             {curPokemons.map((pokemon) => {
