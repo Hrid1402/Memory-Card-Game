@@ -4,6 +4,7 @@ import './styles/cards.css'
 import './styles/gameOver.css'
 import {getPokemons} from './apiCall.js'
 import loadingICON from './assets/loadingICON.png'
+import backCard from './assets/backCard.png'
 import { DifficultyButton } from './components/buttons.jsx'
 import { v4 as uuidv4 } from 'uuid';
 
@@ -44,9 +45,6 @@ function App() {
     for (let i = 0; i < amountNewPokemons; i++) {
       let randomIndex = Math.floor(Math.random() * freePokemons.length);
       randomPokemons.push(freePokemons[randomIndex]);
-      console.log("randomIndex", randomIndex);
-      console.log(freePokemons);
-      console.log("FREE", freePokemons[randomIndex]);
       freePokemons.splice(randomIndex, 1);
     }
     for (let i = 0; i < extraPokemons; i++) {
@@ -55,7 +53,6 @@ function App() {
         randomIndex = Math.floor(Math.random() * copy.length);
       }while(randomPokemons.includes(copy[randomIndex]));
       randomPokemons.push(copy[randomIndex]);
-      console.log("extra", copy[randomIndex]);
       copy.splice(randomIndex, 1);
       
     }
@@ -84,27 +81,58 @@ function App() {
   }, [difficulty]);
 
   function MainMenu({curDifficulty, curPokemons}){
+    function playAnimation(animation){
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        card.classList.add(animation);
+        setTimeout(() => {
+          card.classList.remove(animation);
+        }, 1000);
+      });
+    }
+    
     const [isGameOver, setIsGameOver] = useState(false);
-    function DialogBox(){
+    const [isWinner, setIsWinner] = useState(false);
+    const freePokemons = allPokemons.filter(pokemon => !clickedPokemons.includes(pokemon.name));
+    function DialogBox({isWinner}){
       return(
         <div className='endScreen'>
           <div className='content'>
-            <h1>YOU LOSE</h1>
+            {isWinner?<h1>YOU WON</h1>:<h1>GAME OVER</h1>}
+            {isWinner?null:<h2>Pokemons left:</h2>}
+            <div className='container_left_p'>
+              {isWinner?null:
+                freePokemons.map((pokemon) => {
+                  return(
+                    <div key={uuidv4()} className='P_left'>
+                      <img src={pokemon.sprite} alt={pokemon.name}/>
+                    </div>
+                  )
+                })
+                }
+            </div>
+            
           </div>
         </div>
       )
     }
     useEffect(() => {
+      playAnimation('flip');
+    },[freePokemons]);
+
+    useEffect(() => {
       if (pokemonsLeft === 0) {
           setIsGameOver(true);
+          setIsWinner(true);
       }
     }, [pokemonsLeft]);
+
+
 
     function handleCardClick(name){
       if(clickedPokemons.includes(name)){
         console.log(`You already clicked ${name}!!!!!`);
         const freePokemons = allPokemons.filter(pokemon => !clickedPokemons.includes(pokemon.name));
-        console.log(freePokemons);
         setIsGameOver(true);
       }else{
         console.log(`----------------${name} clicked`);
@@ -113,7 +141,7 @@ function App() {
         const newPokemonsLeft = pokemonsLeft - 1;
         setPokemonsLeft(newPokemonsLeft);
         if(newPokemonsLeft == 0){
-          console.log("GAME OVER, YOU WON!");
+          console.log("YOU WON!");
         }else{
           setRandomPokemons(pokemonTotal, allPokemons);
         }
@@ -122,7 +150,8 @@ function App() {
     function PokemonCard({name, sprite}){
       return( 
         <div key={uuidv4()} className='card' onClick={() => handleCardClick(name)} >
-          <img src={sprite} alt={name}/>
+          <img className='front' src={sprite} alt={name}/>
+          <img className='back' src={backCard} />
         </div>
         )
     }
@@ -152,7 +181,7 @@ function App() {
     }else{
       return(
         <div className='gameBlock'>
-          {isGameOver ? <DialogBox/>: null}
+          {isGameOver ? <DialogBox isWinner={isWinner}/>: null}
           <h1>Pokemons left: {pokemonsLeft}</h1>
           <div className='cards'>
             {curPokemons.map((pokemon) => {
