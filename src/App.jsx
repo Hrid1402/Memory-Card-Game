@@ -33,7 +33,7 @@ function App() {
     }
   }
 
-  function setRandomPokemons(pokemonTotal, allPokemons){
+  function setRandomPokemons(allPokemons){
     let randomPokemons = [];
     let copy = [...allPokemons];
     const freePokemons = allPokemons.filter(pokemon => !clickedPokemons.includes(pokemon.name));
@@ -56,6 +56,7 @@ function App() {
       copy.splice(randomIndex, 1);
       
     }
+
     setCurPokemons(randomPokemons);
 
 
@@ -73,7 +74,7 @@ function App() {
     if (difficulty !== null) {
         const fetchPokemons = async () => {
         await createPokemonCards(pokemonTotal);
-        setRandomPokemons(pokemonTotal, allPokemons);
+        setRandomPokemons(allPokemons);
         setIsLoading(false);
       };
       fetchPokemons();
@@ -81,16 +82,19 @@ function App() {
   }, [difficulty]);
 
   function MainMenu({curDifficulty, curPokemons}){
-    function playAnimation(animation){
-      const cards = document.querySelectorAll('.card');
-      cards.forEach(card => {
-        card.classList.add(animation);
+
+    function playAnimation(animation) {
+      return new Promise((resolve) => {
+        const cards = document.querySelectorAll('.card');
+        setCardClasses("card");
+        setCardClasses("card " + animation);
         setTimeout(() => {
-          card.classList.remove(animation);
-        }, 1000);
+          resolve();
+        }, 500);
       });
     }
     
+    const [cardClasses, setCardClasses] = useState("card");
     const [isGameOver, setIsGameOver] = useState(false);
     const [isWinner, setIsWinner] = useState(false);
     const freePokemons = allPokemons.filter(pokemon => !clickedPokemons.includes(pokemon.name));
@@ -116,40 +120,45 @@ function App() {
         </div>
       )
     }
-    useEffect(() => {
-      playAnimation('flip');
-    },[freePokemons]);
+
 
     useEffect(() => {
-      if (pokemonsLeft === 0) {
-          setIsGameOver(true);
-          setIsWinner(true);
+      if(pokemonsLeft<1){
+        setIsGameOver(true);
+        setIsWinner(true);
       }
+      if(!isGameOver){
+        const runAnimations = async () => {
+        await playAnimation('flip');
+          //await playAnimation('flip2');
+        };
+        runAnimations();
+      }
+      
     }, [pokemonsLeft]);
-
 
 
     function handleCardClick(name){
       if(clickedPokemons.includes(name)){
         console.log(`You already clicked ${name}!!!!!`);
-        const freePokemons = allPokemons.filter(pokemon => !clickedPokemons.includes(pokemon.name));
         setIsGameOver(true);
       }else{
         console.log(`----------------${name} clicked`);
         clickedPokemons.push(name);
-
         const newPokemonsLeft = pokemonsLeft - 1;
         setPokemonsLeft(newPokemonsLeft);
-        if(newPokemonsLeft == 0){
+        if(newPokemonsLeft < 1){
           console.log("YOU WON!");
+          setIsGameOver(true);
+          setIsWinner(true);
         }else{
-          setRandomPokemons(pokemonTotal, allPokemons);
+          setRandomPokemons(allPokemons);
         }
       }
     }
     function PokemonCard({name, sprite}){
       return( 
-        <div key={uuidv4()} className='card' onClick={() => handleCardClick(name)} >
+        <div key={uuidv4()} className={cardClasses} onClick={() => handleCardClick(name)} >
           <img className='front' src={sprite} alt={name}/>
           <img className='back' src={backCard} />
         </div>
