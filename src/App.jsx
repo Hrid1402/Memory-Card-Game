@@ -50,7 +50,13 @@ function App() {
       f++;
     }
   }
-
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+  }
   function setRandomPokemons(allPokemons){
     let randomPokemons = [];
     let copy = [...allPokemons];
@@ -74,8 +80,8 @@ function App() {
       copy.splice(randomIndex, 1);
       
     }
-
-    setCurPokemons(randomPokemons);
+    const finalMixedPokemons = shuffleArray(randomPokemons);
+    setCurPokemons(finalMixedPokemons);
 
 
   }
