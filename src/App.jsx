@@ -6,7 +6,9 @@ import {getPokemons} from './apiCall.js'
 import loadingICON from './assets/loadingICON.png'
 import backCard from './assets/backCard.png'
 import { DifficultyButton } from './components/buttons.jsx'
-import { v4 as uuidv4 } from 'uuid';
+import { GenBtn } from './components/genBtn.jsx'
+import { v4 as uuidv4 } from 'uuid'
+
 
 
 
@@ -15,21 +17,37 @@ let pokemonTotal = 12;
 const amountOfPokemons = {
   easy: 12,
   medium: 18,
-  hard: 24
+  hard: 24,
+  master: 50
 }
+const pokemonGen = {
+  1: 1,
+  2: 152,
+  3: 252,
+  4: 387,
+  5: 494,
+  6: 650,
+  7: 722,
+  8: 810,
+  9: 906
+}
+
 let clickedPokemons = [];
 function App() {
   const [pokemonsLeft, setPokemonsLeft] = useState(pokemonTotal);
   const [curPokemons, setCurPokemons] = useState([]);
   const [difficulty, setDifficulty] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [gen, setGen] = useState(1);
   
 
-  async function createPokemonCards(n) {
+  async function createPokemonCards(n, gen) {
+    let f = pokemonGen[gen];
 
-    for(let i = 1; i <= n; i++) {
-      let pokemon = await getPokemons(i);
+    for(let i = 0; i < n; i++) {
+      let pokemon = await getPokemons(f);
       allPokemons.push({sprite:pokemon.sprites.other["official-artwork"].front_default, name:pokemon.name});
+      f++;
     }
   }
 
@@ -73,7 +91,7 @@ function App() {
   useEffect(() => {
     if (difficulty !== null) {
         const fetchPokemons = async () => {
-        await createPokemonCards(pokemonTotal);
+        await createPokemonCards(pokemonTotal, gen);
         setRandomPokemons(allPokemons);
         setIsLoading(false);
       };
@@ -102,8 +120,9 @@ function App() {
       return(
         <div className='endScreen'>
           <div className='content'>
-            {isWinner?<h1>YOU WON</h1>:<h1>GAME OVER</h1>}
-            {isWinner?null:<h2>Pokemons left:</h2>}
+            {isWinner?<h1>YOU WON</h1>:<h1 className='txtGameOver'>GAME OVER</h1>}
+            {isWinner?null:<h2 className='txt_left'>You caught {clickedPokemons.length} pokemons!</h2>}
+            {isWinner?null:<h2 className='txt_left'>Pokemons left:</h2>}
             <div className='container_left_p'>
               {isWinner?null:
                 freePokemons.map((pokemon) => {
@@ -115,6 +134,7 @@ function App() {
                 })
                 }
             </div>
+            <button className='restartBtn' onClick={() => window.location.reload()}>Play Again</button>
             
           </div>
         </div>
@@ -168,8 +188,9 @@ function App() {
     if(curDifficulty == null){
       return(
         <section>
+          <GenBtn txt={gen} gen={gen} callback={()=>setGen((gen<9)?gen+1:1)}/>
           <h1>Pokémon Memory Cards Game</h1>
-          <p className="read-the-docs">
+          <p className="subTitle">
             In each round, spot and click the different Pokémon card without repeating your previous choices. 
           </p>
           <p>Choose your difficulty:</p>
@@ -177,6 +198,7 @@ function App() {
             <DifficultyButton txt="Easy" difficulty={"easy"} callback={changeDifficulty}/>
             <DifficultyButton txt="Medium" difficulty={"medium"} callback={changeDifficulty}/>
             <DifficultyButton txt="Hard" difficulty={"hard"} callback={changeDifficulty}/>
+            <DifficultyButton txt="MASTER" difficulty={"master"} callback={changeDifficulty}/>
           </div>
         </section>
       )
@@ -191,7 +213,7 @@ function App() {
       return(
         <div className='gameBlock'>
           {isGameOver ? <DialogBox isWinner={isWinner}/>: null}
-          <h1>Pokemons left: {pokemonsLeft}</h1>
+          <h1 className='TXTmenu'>Pokemons left: {pokemonsLeft}</h1>
           <div className='cards'>
             {curPokemons.map((pokemon) => {
               return(

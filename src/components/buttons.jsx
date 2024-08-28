@@ -5,7 +5,7 @@ export function DifficultyButton({txt, difficulty, callback}) {
     callback(difficulty)
   }
   return (
-    <button onClick={handleClick}>{txt}</button>
+    <button className="difficultyBtn" onClick={handleClick}>{txt}</button>
   )
 }
 
