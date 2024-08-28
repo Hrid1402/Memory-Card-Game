@@ -21,16 +21,22 @@
     align-items: center;
 }
 .txt_left{
+    text-align: center;
     color: yellow;
     font-size: 1.5rem;
     margin: 0 0 25px 0;
 }
 .txt_P_left{
+    text-align: center;
     color: #f0f0f0;
     font-size: 1.5rem;
     margin:0;
 }
 .txtGameOver{
+    font-size: 5.2em;
+    line-height: 1.1;
+    text-align: center;
+    color: #f0f0f0;
     margin: 0;
 }
 .P_left{
@@ -55,4 +61,19 @@
     flex-wrap: wrap;
     justify-content: center;
     margin: 1.2rem;
+}
+@media (max-width:524px) {
+    .txtGameOver{
+        font-size: 2.8em;
+    }
+    .txt_left{
+        font-size: 1.2rem;
+    }
+    .txt_P_left{
+        font-size: 1.2rem;
+    }
+    .P_left{
+        width: 60px;
+        height: 60px;
+    }
 }

@@ -14,6 +14,10 @@
     justify-content: center;
 }
 .gameBlock .TXTmenu{
+    font-size: 5.2em;
+    line-height: 1.1;
+    text-align: center;
+    color: #f0f0f0;
     margin: 35px;
     text-shadow: 1px 1px 22px rgba(0,0,0,0.6);
 }
@@ -87,5 +91,46 @@
         transform: rotateY(180deg);
     }
 
+}
+
+@media (max-width:780px){
+  .card{
+    width: 150px;
+    height: 250px;  
+  }
+  .gameBlock .TXTmenu{
+    margin: 25px;
+    font-size: 4.2em;
+  }
+}
+@media (max-width:620px){
+    .card{
+      width: 120px;
+      height: 220px;  
+    }
+    .gameBlock .TXTmenu{
+      margin: 15px;
+      font-size: 3.5em;
+    }
+}
+@media (max-width:518px){
+    .card{
+      width: 100px;
+      height: 200px;  
+    }
+    .gameBlock .TXTmenu{
+      margin: 8px;
+      font-size: 3.3em;
+    }
+}
+@media (max-width:462px){
+    .card{
+      width: 80px;
+      height: 180px;  
+    }
+    .gameBlock .TXTmenu{
+      margin: 10px;
+      font-size: 2.8em;
+    }
 }
 

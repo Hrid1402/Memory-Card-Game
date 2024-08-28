@@ -18,7 +18,7 @@ body {
   background-attachment: fixed;
 }
 
-h1 {
+.MainText {
   font-size: 5.2em;
   line-height: 1.1;
   text-align: center;
@@ -97,5 +97,23 @@ section{
   display: block;
   
   font-size: 2.4rem;
+}
+
+@media (max-width:500px){
+  .MainText{
+    font-size: 3.8em;
+  }
+  .difficultyBtn{
+    font-size: 1.5rem;
+  }
+}
+@media (max-width:400px){
+  .MainText{
+    font-size: 3.2em;
+  }
+  .difficultyBtn{
+    font-size: 1.2rem;
+  }
+  
 }
 

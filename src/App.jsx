@@ -128,7 +128,7 @@ function App() {
           <div className='content'>
             {isWinner?<h1>YOU WON</h1>:<h1 className='txtGameOver'>GAME OVER</h1>}
             {isWinner?null:<h2 className='txt_left'>You caught {clickedPokemons.length} pokemons!</h2>}
-            {isWinner?null:<h2 className='txt_left'>Pokemons left:</h2>}
+            {isWinner?null:<h2 className='txt_P_left'>Pokemons left:</h2>}
             <div className='container_left_p'>
               {isWinner?null:
                 freePokemons.map((pokemon) => {
@@ -195,7 +195,7 @@ function App() {
       return(
         <section>
           <GenBtn txt={gen} gen={gen} callback={()=>setGen((gen<9)?gen+1:1)}/>
-          <h1>Pokémon Memory Cards Game</h1>
+          <h1 className='MainText'>Pokémon Memory Cards Game</h1>
           <p className="subTitle">
             In each round, spot and click the different Pokémon card without repeating your previous choices. 
           </p>
